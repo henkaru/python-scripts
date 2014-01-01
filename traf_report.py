@@ -20,8 +20,15 @@ cost = 0.3 # Стоимость в рублях одного Мб за перв�
 cur_month = str(datetime.datetime.now().month)
 prev_month = str(datetime.datetime.now().month - 1)
 cur_year = str(datetime.datetime.now().year)
-time_start = datetime.datetime.strptime(cur_year + '-' + prev_month + '-1',"%Y-%m-%d").strftime("%s")
+year = str(datetime.datetime.now().year)
 time_end = datetime.datetime.strptime(cur_year + '-' + cur_month + '-1',"%Y-%m-%d").strftime("%s")
+
+if cur_month == "1":
+    prev_month = "12"
+    year = str(datetime.datetime.now().year - 1)
+    time_start = datetime.datetime.strptime(year + '-' + prev_month + '-1',"%Y-%m-%d").strftime("%s")
+else:
+    time_start = datetime.datetime.strptime(year + '-' + prev_month + '-1',"%Y-%m-%d").strftime("%s")
 
 #print time_start, time_end
 # Создание курсора для подключения к базе traf
@@ -73,13 +80,13 @@ con.close()
 # Отправка отчета
 msg = """Отчет об входящем трафике во вложенном файле.
 Файл сохранен в кодировке UTF-8."""
-subj = 'Интернет за ' + prev_month + '-' + cur_year
-admin = 'henkaru12@gmail.com'
-copyto1 = ''
+subj = 'Интернет за ' + prev_month + '-' + year
+admin = '123@gmail.com'
+copyto1 = '123@mail.ru'
 copyto2 = ''
 
 p1 = subprocess.Popen(["echo",msg],stdout=subprocess.PIPE)
-p2 = subprocess.Popen(["mutt","-s",subj,"-a",filename,"--",admin],stdin=p1.stdout)
+p2 = subprocess.Popen(["mutt","-s",subj,"-a",filename,"--",admin,copyto1],stdin=p1.stdout)
 p1.stdout.close()
 out = p2.communicate()[0]
 
